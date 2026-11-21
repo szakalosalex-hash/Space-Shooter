@@ -6,14 +6,14 @@ public class PowerUp : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 3.0f;
-    private Player _player;
 
-    //ID for powerups
     //0 = tripleshot
     //1 = speed
     //2 = shield
     [SerializeField]
     private int powerUpId;
+
+    private bool _iscollected = false;
 
     // Start is called before the first frame update
     void Start()
@@ -24,7 +24,9 @@ public class PowerUp : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector3.down * _speed * Time.deltaTime);
+        transform.Translate(
+            Vector3.down * _speed * Time.deltaTime);
+
         Vector3 pos = transform.position;
         if (pos.y < -6.6f)
         {
@@ -34,35 +36,45 @@ public class PowerUp : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Player")
+        if (_iscollected) return;
+
+        if (!other.CompareTag("Player")) return;
+
+        Player player = other.GetComponent<Player>();
+
+        if (player == null)
         {
-            Player _player = other.transform.GetComponent<Player>();
-            if(_player != null)
-            {
-
-                switch(powerUpId)
-                {
-                    case 0:
-                        _player.TsActive();
-                        _player.PlayPowerUpSound();
-                        break;
-
-                    case 1:
-                        _player.SpeedActive();
-                        _player.PlayPowerUpSound();
-                        break;
-                    case 2:
-                        _player.ShieldActive();
-                        _player.PlayPowerUpSound();
-                        break;
-                    default:
-                        Debug.Log("Default Value");
-                        break;
-                }
-            }
-            Destroy(this.gameObject);
-
+            Debug.LogError("Player component is missing!", this);
+            return;
         }
+
+
+        switch (powerUpId)
+        {
+            case 0:
+                player.TsActive();
+                break;
+
+            case 1:
+                player.SpeedActive();
+                break;
+
+            case 2:
+                player.ShieldActive();
+                break;
+
+            default:
+                Debug.LogError("Invalid PowerUp ID: " + powerUpId, this);
+                return;
+        }
+        _iscollected = true;
+
+        player.PlayPowerUpSound();
+
+
+        Destroy(this.gameObject);
+
+
 
     }
 }
