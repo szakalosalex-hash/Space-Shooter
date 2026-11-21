@@ -53,14 +53,38 @@ public class Player : MonoBehaviour
     void Start()
     {
         transform.position = new Vector3(0, -3.5f, 0);
-        _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<Spawn_Manager>();
-
+        //spawn manager init
+        GameObject spawnObject = GameObject.Find("Spawn_Manager");
+        if (spawnObject != null)
+        {
+            _spawnManager = spawnObject.GetComponent<Spawn_Manager>();
+        }
         if (_spawnManager == null)
         {
             Debug.LogError("Spawnmanager is null!");
         }
-        playerShield.SetActive(false);
-        UIManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+
+        //shield init
+        if (playerShield != null)
+        {
+            playerShield.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("Player shield is not assigned!");
+        }
+
+        //UI Manager init
+        GameObject canvasObject = GameObject.Find("Canvas");
+
+        if (canvasObject != null)
+        {
+            UIManager = canvasObject.GetComponent<UIManager>();
+        }
+        else
+        {
+            Debug.LogError("UIManager is missing!");
+        }
     }
 
     // Update is called once per frame

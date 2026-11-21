@@ -22,7 +22,7 @@ public class Asteroid : MonoBehaviour
     void Start()
     {
         GameObject playerObject = GameObject.Find("Player");
-
+        //player init
         if (playerObject != null)
         {
             _player = playerObject.GetComponent<Player>();
@@ -33,7 +33,16 @@ public class Asteroid : MonoBehaviour
             Debug.LogError("Player is null!");
         }
 
-        _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<Spawn_Manager>();
+        //spawnManager init
+        GameObject spawnObject = GameObject.Find("Spawn_Manager");
+        if (spawnObject != null)
+        {
+            _spawnManager = spawnObject.GetComponent<Spawn_Manager>();
+        }
+        else
+        {
+            Debug.LogError("SpawnManager is missing!");
+        }
     }
 
     void Update()
@@ -72,7 +81,10 @@ public class Asteroid : MonoBehaviour
         if (_lives <= 0)
         {
             Die();
-            _spawnManager.StartSpawning();
+            if (_spawnManager != null)
+            {
+                _spawnManager.StartSpawning();
+            }
         }
     }
 

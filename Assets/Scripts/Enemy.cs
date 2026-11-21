@@ -20,23 +20,36 @@ public class Enemy : MonoBehaviour
     private AudioClip _explosion;
      void Start()
     {
-        _player = GameObject.Find("Player").GetComponent<Player>();
-        if (_player == null)
+        //player init
+        GameObject playerObject = GameObject.Find("Player");
+
+        if (playerObject != null)
+        {
+            _player = playerObject.GetComponent<Player>();
+        }
+        else
         {
             Debug.LogError("Player is null!");
         }
+
         _enemyDeath = GetComponent<Animator>();
 
+        //enemy anim check
         if (_enemyDeath == null)
         {
-            Debug.LogError("Animator is null!");
+            Debug.LogError("Enemy animator is null!", this);
         }
 
         _audiosource = GetComponent<AudioSource>();
 
+        //audio check
         if (_audiosource == null)
         {
-            Debug.LogError("Audiosource is null!");
+            Debug.LogError("Audiosource is null!", this);
+        }
+        if (_explosion == null)
+        {
+            Debug.LogError("Enemy explosion Audio is missing!", this);
         }
     }
     // Update is called once per frame
@@ -79,7 +92,10 @@ public class Enemy : MonoBehaviour
 
     IEnumerator DestroyAfterAnim()
     {
-        _enemyDeath.SetTrigger("OnEnemyDeath");
+        if (_enemyDeath != null)
+        {
+            _enemyDeath.SetTrigger("OnEnemyDeath");
+        }
         yield return new WaitForSeconds(1.5f);
         Destroy(this.gameObject);
     }
@@ -91,9 +107,17 @@ public class Enemy : MonoBehaviour
         _isdead = true;
         _speed = 0;
 
-        GetComponent<Collider2D>().enabled = false;
+        Collider2D enemyCollider = GetComponent<Collider2D>();
 
+        if (enemyCollider != null)
+        {
+            enemyCollider.enabled = false;
+        }
+
+        if (_audiosource != null && _explosion != null)
+        {
+            _audiosource.PlayOneShot(_explosion);
+        }
         StartCoroutine(DestroyAfterAnim());
-        _audiosource.PlayOneShot(_explosion);
     }
 }
