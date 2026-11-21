@@ -70,6 +70,7 @@ public class WaveManager : MonoBehaviour
         if (_enemiesAlive <= 0) return;
 
         _enemiesAlive--;
+        _uiManager.UpdateEnemies(_enemiesAlive, _waveEnemies);
 
 
         if (_enemiesAlive == 0 && _isWaveSpawning == false)
@@ -80,7 +81,7 @@ public class WaveManager : MonoBehaviour
     public void EnemySpawned()
     {
         _enemiesAlive++;
-        Debug.Log("Enemies Alive: " + _enemiesAlive);
+        _uiManager.UpdateEnemies(_enemiesAlive, _waveEnemies);
     }
     public void WaveSpawningFinished()
     {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using JetBrains.Annotations;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,6 +13,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private Text _waveText;
+
+    [SerializeField]
+    private Text _enemyNumberText;
 
     [SerializeField]
     private Sprite[] _liveSprites;
@@ -31,6 +35,14 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (_enemyNumberText != null)
+        {
+            _enemyNumberText.text = "Enemies: 0";
+        }
+        else
+        {
+            Debug.LogError("Enemies Text is missing!", this);
+        }
 
         if (_scoreText != null)
         {
@@ -108,6 +120,16 @@ public class UIManager : MonoBehaviour
         }
 
         _waveText.text = "Wave: " + wave.ToString();
+    }
+
+    public void UpdateEnemies(int alive, int total)
+    {
+       if (_enemyNumberText == null)
+        {
+            Debug.LogError("Enemies Text is missing!", this);
+            return;
+        }
+       _enemyNumberText.text = "Enemies: " + alive + "/" + total;
     }
     public void UpdateLives(int currentlives)
     {
