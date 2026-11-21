@@ -17,6 +17,7 @@ public class MainMenu : MonoBehaviour
        if (!Application.CanStreamedLevelBeLoaded(_gameSceneBuildIndex))
         {
             Debug.LogError("Game scene cannot be loaded, check Build settings!", this);
+            return;
         }
 
         _isloading = true;
