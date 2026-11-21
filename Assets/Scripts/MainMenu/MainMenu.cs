@@ -5,8 +5,21 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    [SerializeField]
+    private int _gameSceneBuildIndex = 1;
+
+    private bool _isloading = false;
+
     public void LoadGame()
     {
-        SceneManager.LoadScene(1); //main game scene
+       if (_isloading) return;
+
+       if (!Application.CanStreamedLevelBeLoaded(_gameSceneBuildIndex))
+        {
+            Debug.LogError("Game scene cannot be loaded, check Build settings!", this);
+        }
+
+        _isloading = true;
+        SceneManager.LoadScene(_gameSceneBuildIndex);
     }
 }
