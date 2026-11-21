@@ -112,7 +112,6 @@ public class UIManager : MonoBehaviour
 
         while (true)
         {
-            _GameManager.GameOver();
             _GameOverText.gameObject.SetActive(true);
             yield return new WaitForSeconds(0.5f);
 

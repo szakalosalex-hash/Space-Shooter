@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class Spawn_Manager : MonoBehaviour
@@ -27,8 +28,23 @@ public class Spawn_Manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _asteroid = Instantiate(_asteroid, new Vector3(0, 4, 0), Quaternion.identity);
+        if (_asteroid != null)
+        {
+            _asteroid = Instantiate(_asteroid,
+                new Vector3(0, 4, 0),
+                Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogError("Asteroid prefab is missing!", this);
+        }
+
         _audioSource = GetComponent<AudioSource>();
+
+        if (_audioSource == null )
+        {
+            Debug.LogError("Audio Source is missing!", this);
+        }
     }
 
     public void StartSpawning()
@@ -60,7 +76,8 @@ public class Spawn_Manager : MonoBehaviour
 
         if (EnemyContainer == null)
         {
-            Debug.LogError("EnemyContainer us not assigned!", this);
+            Debug.LogError("EnemyContainer is not assigned!", this);
+            yield break;
         }
 
         yield return new WaitForSeconds(1.5f);
