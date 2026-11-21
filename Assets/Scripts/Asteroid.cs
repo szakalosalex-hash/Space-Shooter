@@ -95,9 +95,27 @@ public class Asteroid : MonoBehaviour
         _isdead = true;
         _rotationspeed = 0;
 
-        GetComponent<Collider2D>().enabled = false;
+        Collider2D asteroidCollider = GetComponent<Collider2D>();
 
-        Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        if (asteroidCollider != null)
+        {
+            asteroidCollider.enabled = false;
+        }
+        else
+        {
+            Debug.LogError("Asteroid Collider is missing!", this);
+        }
+
+        if (_explosionPrefab != null)
+        {
+            Instantiate(_explosionPrefab,
+                transform.position,
+                Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogError("Explosion prefab is missing!", this);
+        }
 
         Destroy(gameObject);
     }

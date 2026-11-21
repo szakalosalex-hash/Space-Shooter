@@ -68,6 +68,8 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (_isdead) return;
+
         if (other.CompareTag("Player"))
         {
             Player player = other.transform.GetComponent<Player>();

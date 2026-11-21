@@ -65,6 +65,12 @@ public class UIManager : MonoBehaviour
 
     public void UpdateScore(int score)
     {
+        if (_scoreText == null)
+        {
+            Debug.LogError("Score Text is missing!", this);
+            return;
+        }
+
         _scoreText.text = "Score: " + score.ToString();
     }
     public void UpdateLives(int currentlives)

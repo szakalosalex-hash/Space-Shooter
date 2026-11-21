@@ -147,7 +147,11 @@ public class Player : MonoBehaviour
         {
             Instantiate(laserPrefab, transform.position + new Vector3(0, 1.03f, 0), Quaternion.identity);
         }
-        _audiosource.PlayOneShot(_laser);
+
+        if (_audiosource != null || _laser != null)
+        {
+            _audiosource.PlayOneShot(_laser);
+        }
     }
     public void Damage()
     {
@@ -175,7 +179,11 @@ public class Player : MonoBehaviour
             _spawnManager.OnPlayerDeath();
             UIManager.GameOverText();
             Destroy(gameObject);
-            _audiosource.PlayOneShot(_explosion);
+
+            if (_audiosource != null || _explosion != null)
+                {
+                _audiosource.PlayOneShot(_explosion);
+                }
         }
     }
     public void TsActive()
@@ -228,6 +236,9 @@ public class Player : MonoBehaviour
     }
     public void PlayPowerUpSound()
     {
-        _audiosource.PlayOneShot(_powerup);
+        if (_audiosource != null || _powerup != null)
+        {
+            _audiosource.PlayOneShot(_powerup);
+        }
     }
 }
