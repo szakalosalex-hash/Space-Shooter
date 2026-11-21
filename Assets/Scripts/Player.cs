@@ -139,6 +139,18 @@ public class Player : MonoBehaviour
 
             nextFire = Time.time + _firerate;
 
+        if (_tSActive && tSPrefab == null)
+        {
+            Debug.LogError("Triple Shot prefab is missing!", this);
+            return;
+        }
+
+        if (!_tSActive && laserPrefab == null)
+        {
+            Debug.LogError("Laser prefab is missing!", this);
+            return;
+        }
+
         if (_tSActive == true)
         {
             Instantiate(tSPrefab, transform.position + new Vector3(0, 1.03f, 0), Quaternion.identity);
@@ -148,7 +160,7 @@ public class Player : MonoBehaviour
             Instantiate(laserPrefab, transform.position + new Vector3(0, 1.03f, 0), Quaternion.identity);
         }
 
-        if (_audiosource != null || _laser != null)
+        if (_audiosource != null && _laser != null)
         {
             _audiosource.PlayOneShot(_laser);
         }
@@ -163,7 +175,11 @@ public class Player : MonoBehaviour
         }
 
         _lives--;
-        UIManager.UpdateLives(_lives);
+
+        if (UIManager != null)
+        {
+            UIManager.UpdateLives(_lives);
+        }
 
         if (_lives == 2)
         {
@@ -176,11 +192,19 @@ public class Player : MonoBehaviour
 
         if (_lives <= 0)
         {
-            _spawnManager.OnPlayerDeath();
-            UIManager.GameOverText();
+            if (_spawnManager != null)
+            {
+                _spawnManager.OnPlayerDeath();
+            }
+
+            if (UIManager != null)
+            {
+                UIManager.GameOverText();
+            }
+
             Destroy(gameObject);
 
-            if (_audiosource != null || _explosion != null)
+            if (_audiosource != null && _explosion != null)
                 {
                 _audiosource.PlayOneShot(_explosion);
                 }
@@ -225,7 +249,15 @@ public class Player : MonoBehaviour
         if (_shieldActive != true)
         {
             _shieldActive = true;
-            playerShield.SetActive(true);
+
+            if (playerShield != null)
+            {
+                playerShield.SetActive(true);
+            }
+            else
+            {
+                Debug.LogError("Player shield is missing", this);
+            }
         }
     }
     public void AddScore(int points)
@@ -236,7 +268,7 @@ public class Player : MonoBehaviour
     }
     public void PlayPowerUpSound()
     {
-        if (_audiosource != null || _powerup != null)
+        if (_audiosource != null && _powerup != null)
         {
             _audiosource.PlayOneShot(_powerup);
         }
