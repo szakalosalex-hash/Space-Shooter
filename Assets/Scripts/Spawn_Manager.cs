@@ -22,6 +22,8 @@ public class Spawn_Manager : MonoBehaviour
     [SerializeField]
     private AudioClip _poweruppickup;
 
+    private bool _isSpawning = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +33,13 @@ public class Spawn_Manager : MonoBehaviour
 
     public void StartSpawning()
     {
+        if (_isSpawning || _stopspawning)
+        {
+            return;
+        }
+
+        _isSpawning=true;
+
         StartCoroutine(SpawnEnemyRoutine());
         StartCoroutine(SpawnPowerUpRoutine());
     }
@@ -42,13 +51,30 @@ public class Spawn_Manager : MonoBehaviour
 
     IEnumerator SpawnEnemyRoutine()
     {
-        yield return new WaitForSeconds(1.5f);
-        while (_stopspawning == false)
-        {
-            Vector3 SpawnPos = new Vector3(Random.Range(-8.5f, 8.5f), 7, 0);
 
-            GameObject newEnemy = Instantiate(EnemyPrefab, SpawnPos + new Vector3(0, 4f, 0), Quaternion.identity);
-            newEnemy.transform.parent = EnemyContainer.transform;
+        if (EnemyPrefab == null)
+        {
+            Debug.LogError("EnemyPrefab is not assigned!", this);
+            yield break;
+        }
+
+        if (EnemyContainer == null)
+        {
+            Debug.LogError("EnemyContainer us not assigned!", this);
+        }
+
+        yield return new WaitForSeconds(1.5f);
+        while (!_stopspawning)
+        {
+            Vector3 SpawnPos = new Vector3(
+                Random.Range(-8.5f, 8.5f),7, 0);
+
+            GameObject newEnemy = Instantiate(
+                EnemyPrefab,
+                SpawnPos + new Vector3(0, 4f, 0),
+                Quaternion.identity);
+
+            newEnemy.transform.SetParent(EnemyContainer.transform);
             yield return new WaitForSeconds(5.0f);    
         }
     }
@@ -59,8 +85,16 @@ public class Spawn_Manager : MonoBehaviour
 
     IEnumerator SpawnPowerUpRoutine()
     {
+
+        if (powerUps == null || powerUps.Length == 0)
+        {
+            Debug.LogError("PowerUps array is empty or missing!", this);
+            yield break;
+        }
+
         yield return new WaitForSeconds(1.5f);
-        while (_stopspawning == false)
+
+        while (!_stopspawning)
         {
             float cooldown = Random.Range(3f, 8f);
 
@@ -73,9 +107,19 @@ public class Spawn_Manager : MonoBehaviour
 
             int randomPowerUp = Random.Range(0, powerUps.Length);
 
-            Vector3 SpawnPos = new Vector3(Random.Range(-8.5f, 8.5f), 7, 0);
+            if (powerUps[randomPowerUp] == null)
+            {
+                Debug.LogError("Selected Powerup prefab is missing!", this);
+                continue;
+            }
 
-            GameObject newTripleShot = Instantiate(powerUps[randomPowerUp], SpawnPos + new Vector3(0, + 4f, 0), Quaternion.identity);
+            Vector3 SpawnPos = new Vector3(
+                Random.Range(-8.5f, 8.5f), 7, 0);
+
+             Instantiate(
+                 powerUps[randomPowerUp],
+                 SpawnPos + new Vector3(0, + 4f, 0),
+                 Quaternion.identity);
         }
     }
 
