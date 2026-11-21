@@ -19,6 +19,7 @@ public class Asteroid : MonoBehaviour
     private bool _isdead = false;
 
     private Spawn_Manager _spawnManager;
+    private WaveManager _waveManager;
     void Start()
     {
         GameObject playerObject = GameObject.Find("Player");
@@ -42,6 +43,16 @@ public class Asteroid : MonoBehaviour
         else
         {
             Debug.LogError("SpawnManager is missing!");
+        }
+
+        GameObject WaveObject = GameObject.Find("Wave_Manager");
+        if(WaveObject != null)
+        {
+            _waveManager = WaveObject.GetComponent<WaveManager>();
+        }
+        else
+        {
+            Debug.LogError("WaveManager is missing!", this);
         }
     }
 
@@ -81,8 +92,9 @@ public class Asteroid : MonoBehaviour
         if (_lives <= 0)
         {
             Die();
-            if (_spawnManager != null)
+            if (_waveManager != null)
             {
+                _waveManager.StartFirstWave();
                 _spawnManager.StartSpawning();
             }
         }

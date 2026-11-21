@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    [SerializeField]
+    private WaveManager waveManager;
+    
     private float _speed = 4.0f;
     [SerializeField]
     private Player _player;
@@ -104,9 +107,20 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
+       
         if (_isdead) return;
 
         _isdead = true;
+
+        if (waveManager != null)
+        {
+            waveManager.EnemyDefeated();
+        }
+        else
+        {
+            Debug.LogError("WaveManager reference is null!", this);
+        }
+
         _speed = 0;
 
         Collider2D enemyCollider = GetComponent<Collider2D>();
@@ -121,5 +135,9 @@ public class Enemy : MonoBehaviour
             _audiosource.PlayOneShot(_explosion);
         }
         StartCoroutine(DestroyAfterAnim());
+    }
+    public void SetWaveManager(WaveManager manager)
+    {
+        waveManager = manager;
     }
 }

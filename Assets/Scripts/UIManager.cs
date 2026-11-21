@@ -11,6 +11,9 @@ public class UIManager : MonoBehaviour
     private Text _scoreText;
 
     [SerializeField]
+    private Text _waveText;
+
+    [SerializeField]
     private Sprite[] _liveSprites;
 
     [SerializeField]
@@ -21,6 +24,8 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Text _restartText;
     private GameManager _GameManager;
+
+    private WaveManager _waveManager;
 
     private Coroutine _gameOverCoroutone;
     // Start is called before the first frame update
@@ -34,6 +39,15 @@ public class UIManager : MonoBehaviour
         else
         {
             Debug.LogError("Score Text is missing!", this);
+        }
+
+        if (_waveText != null)
+        {
+            _waveText.text = "Wave: 0";
+        }
+        else
+        {
+            Debug.LogError("Wave Text is missing!", this);
         }
 
         if (_GameOverText != null)
@@ -55,6 +69,17 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("GameManager reference is missing!", this);
         }
+
+        GameObject waveManager = GameObject.Find("Wave_Manager");
+
+        if (waveManager != null)
+        {
+            _waveManager = waveManager.GetComponent<WaveManager>();
+        }
+        else
+        {
+            Debug.LogError("WaveManager reference is missing!", this);
+        }
     }
 
     // Update is called once per frame
@@ -72,6 +97,17 @@ public class UIManager : MonoBehaviour
         }
 
         _scoreText.text = "Score: " + score.ToString();
+    }
+
+    public void UpdateWave(int wave)
+    {
+        if (_waveText == null)
+        {
+            Debug.LogError("Wave Text is missing!", this);
+            return;
+        }
+
+        _waveText.text = "Wave: " + wave.ToString();
     }
     public void UpdateLives(int currentlives)
     {
