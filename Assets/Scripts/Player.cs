@@ -170,7 +170,15 @@ public class Player : MonoBehaviour
         if (_shieldActive)
         {
             _shieldActive = false;
-            playerShield.SetActive(false);
+
+            if (playerShield != null)
+            {
+                playerShield.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError("Player shield reference is missing!", this);
+            }
             return;
         }
 
@@ -183,11 +191,11 @@ public class Player : MonoBehaviour
 
         if (_lives == 2)
         {
-            damaged[0].SetActive(true);
+            SetDamageVisual(0);
         }
         else if (_lives == 1)
         {
-            damaged[1].SetActive(true);
+            SetDamageVisual(1);
         }
 
         if (_lives <= 0)
@@ -263,7 +271,15 @@ public class Player : MonoBehaviour
     public void AddScore(int points)
     {
         _score += points;
-        UIManager.UpdateScore(_score);
+
+        if (UIManager != null)
+        {
+            UIManager.UpdateScore(_score);
+        }
+        else
+        {
+            Debug.LogError("UIManager reference is missing!", this);
+        }
 
     }
     public void PlayPowerUpSound()
@@ -272,5 +288,24 @@ public class Player : MonoBehaviour
         {
             _audiosource.PlayOneShot(_powerup);
         }
+    }
+
+    private void SetDamageVisual(int index)
+    {
+        if (damaged == null || index < 0 || index >= damaged.Length)
+        {
+            Debug.LogError("Damaged array is missing or incorrectly configured!", this);
+            return;
+        }
+
+        if (damaged[index] != null)
+        {
+            damaged[index].SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("Damaged visual at index " + index + " is missing!", this);
+        }
+
     }
 }
