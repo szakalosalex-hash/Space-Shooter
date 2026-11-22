@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using JetBrains.Annotations;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,6 +10,12 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField]
     private Text _scoreText;
+
+    [SerializeField]
+    private Text _waveText;
+
+    [SerializeField]
+    private Text _enemyNumberText;
 
     [SerializeField]
     private Sprite[] _liveSprites;
@@ -22,10 +29,23 @@ public class UIManager : MonoBehaviour
     private Text _restartText;
     private GameManager _GameManager;
 
+    private WaveManager _waveManager;
+
+    [SerializeField]
+    private Image bossHpFill;
+
     private Coroutine _gameOverCoroutone;
     // Start is called before the first frame update
     void Start()
     {
+        if (_enemyNumberText != null)
+        {
+            _enemyNumberText.text = "Enemies: 0";
+        }
+        else
+        {
+            Debug.LogError("Enemies Text is missing!", this);
+        }
 
         if (_scoreText != null)
         {
@@ -34,6 +54,15 @@ public class UIManager : MonoBehaviour
         else
         {
             Debug.LogError("Score Text is missing!", this);
+        }
+
+        if (_waveText != null)
+        {
+            _waveText.text = "Wave: 0";
+        }
+        else
+        {
+            Debug.LogError("Wave Text is missing!", this);
         }
 
         if (_GameOverText != null)
@@ -55,6 +84,26 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("GameManager reference is missing!", this);
         }
+
+        GameObject waveManager = GameObject.Find("Wave_Manager");
+
+        if (waveManager != null)
+        {
+            _waveManager = waveManager.GetComponent<WaveManager>();
+        }
+        else
+        {
+            Debug.LogError("WaveManager reference is missing!", this);
+        }
+
+        if (bossHpFill != null)
+        {
+            bossHpFill.transform.parent.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("Boss HP bar reference is missing!");
+        }
     }
 
     // Update is called once per frame
@@ -72,6 +121,27 @@ public class UIManager : MonoBehaviour
         }
 
         _scoreText.text = "Score: " + score.ToString();
+    }
+
+    public void UpdateWave(int wave)
+    {
+        if (_waveText == null)
+        {
+            Debug.LogError("Wave Text is missing!", this);
+            return;
+        }
+
+        _waveText.text = "Wave: " + wave.ToString();
+    }
+
+    public void UpdateEnemies(int alive, int total)
+    {
+       if (_enemyNumberText == null)
+        {
+            Debug.LogError("Enemies Text is missing!", this);
+            return;
+        }
+       _enemyNumberText.text = "Enemies: " + alive + "/" + total;
     }
     public void UpdateLives(int currentlives)
     {
@@ -124,5 +194,27 @@ public class UIManager : MonoBehaviour
             _GameOverText.gameObject.SetActive(false);
             yield return new WaitForSeconds(0.5f);
         }
-    }    
+    }
+    
+    public void ShowBossHP(float currentHealth, float maxHealth)
+    {
+        if (bossHpFill == null) return;
+
+        bossHpFill.transform.parent.gameObject.SetActive(true);
+        UpdateBossHP(currentHealth, maxHealth);
+    }
+
+    public void UpdateBossHP(float currentHealth, float maxHealth)
+    {
+        if (bossHpFill == null || maxHealth <= 0) return;
+
+        bossHpFill.fillAmount = currentHealth / maxHealth;
+    }
+
+    public void HideBossHPBar()
+    {
+        if (bossHpFill == null) return;
+
+        bossHpFill.transform.parent.gameObject.SetActive(false);
+    }
 }

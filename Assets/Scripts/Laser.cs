@@ -25,4 +25,15 @@ public class Laser : MonoBehaviour
             }
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Boss boss = other.GetComponent<Boss>();
+
+        if (boss != null)
+        {
+            boss.Damage();
+            Destroy(gameObject);
+        }
+    }
 }

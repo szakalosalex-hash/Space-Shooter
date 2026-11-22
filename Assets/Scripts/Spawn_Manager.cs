@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using JetBrains.Annotations;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -9,6 +10,8 @@ public class Spawn_Manager : MonoBehaviour
     private GameObject EnemyPrefab;
     [SerializeField]
     private GameObject EnemyContainer;
+    [SerializeField]
+    private WaveManager _waveManager;
     private bool _stopspawning = false;
     [SerializeField]
     private GameObject TripleShot;
@@ -18,6 +21,9 @@ public class Spawn_Manager : MonoBehaviour
     private GameObject[] powerUps;
     [SerializeField]
     private GameObject _asteroid;
+
+    [SerializeField]
+    private GameObject Boss;
 
     private AudioSource _audioSource;
     [SerializeField]
@@ -56,44 +62,12 @@ public class Spawn_Manager : MonoBehaviour
 
         _isSpawning=true;
 
-        StartCoroutine(SpawnEnemyRoutine());
         StartCoroutine(SpawnPowerUpRoutine());
     }
     // Update is called once per frame
     void Update()
     {
 
-    }
-
-    IEnumerator SpawnEnemyRoutine()
-    {
-
-        if (EnemyPrefab == null)
-        {
-            Debug.LogError("EnemyPrefab is not assigned!", this);
-            yield break;
-        }
-
-        if (EnemyContainer == null)
-        {
-            Debug.LogError("EnemyContainer is not assigned!", this);
-            yield break;
-        }
-
-        yield return new WaitForSeconds(1.5f);
-        while (!_stopspawning)
-        {
-            Vector3 SpawnPos = new Vector3(
-                Random.Range(-8.5f, 8.5f),7, 0);
-
-            GameObject newEnemy = Instantiate(
-                EnemyPrefab,
-                SpawnPos + new Vector3(0, 4f, 0),
-                Quaternion.identity);
-
-            newEnemy.transform.SetParent(EnemyContainer.transform);
-            yield return new WaitForSeconds(5.0f);    
-        }
     }
     public void OnPlayerDeath()
     {
@@ -140,4 +114,71 @@ public class Spawn_Manager : MonoBehaviour
         }
     }
 
+    public void SpawnWave (int enemyCount)
+    {
+        if (_waveManager == null)
+        {
+            Debug.LogError("WaveManager referernce is null!");
+            return;
+        }
+
+        if (EnemyPrefab == null || EnemyContainer == null)
+        {
+            Debug.LogError("EnemyPrefab or EnemyContainer is null!", null);
+            return;
+        }
+
+        StartCoroutine(SpawnWaveRoutine(enemyCount));
+    }
+    IEnumerator SpawnWaveRoutine(int enemyCount)
+    {
+        Debug.Log("Starting enemy spawn. Planned enemies: " + enemyCount);
+
+        if (!_stopspawning)
+        {
+            while (enemyCount > 0)
+            {
+                Vector3 SpawnPos = new Vector3(
+                Random.Range(-8.5f, 8.5f), 7, 0);
+
+                GameObject newEnemy = Instantiate(
+           EnemyPrefab,
+           SpawnPos + new Vector3(0, 4f, 0),
+           Quaternion.identity);
+                newEnemy.transform.SetParent(EnemyContainer.transform);
+
+
+                Enemy enemy = newEnemy.GetComponent<Enemy>();
+
+                if (enemy != null)
+                {
+                    enemy.SetWaveManager(_waveManager);
+                    enemyCount--;
+                    _waveManager.EnemySpawned();
+                }
+                else
+                {
+                    Debug.LogError("Eenmy Component is missing!", this);
+                    Destroy(newEnemy);
+                    yield break;
+                }
+
+                yield return new WaitForSeconds(1.2f);
+            }
+
+            _waveManager.WaveSpawningFinished();
+        }
+    }
+
+    public void SpawnBoss()
+    {
+        if (Boss == null)
+        {
+            Debug.LogError("Boss prefab is missing!");
+            return;
+        }
+        Instantiate(Boss,
+            new Vector3(0,8,0),
+            Quaternion.identity);
+    }
 }
